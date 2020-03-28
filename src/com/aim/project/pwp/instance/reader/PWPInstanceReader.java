@@ -39,12 +39,10 @@ public class PWPInstanceReader implements PWPInstanceReaderInterface {
         }
       }
 
-      return new PWPInstance(
-          aoLocations.size(),
-          (Location[]) aoLocations.toArray(),
-          depotLocation,
-          homeLocation,
-          random);
+      int numberOfLocations = aoLocations.size() + 2;
+      Location[] locations = (Location[]) aoLocations.toArray();
+
+      return new PWPInstance(numberOfLocations, locations, depotLocation, homeLocation, random);
 
     } catch (IOException e) {
       e.printStackTrace();
