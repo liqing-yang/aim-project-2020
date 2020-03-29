@@ -1,217 +1,270 @@
 package com.aim.project.pwp;
 
-
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.aim.project.pwp.heuristics.AdjacentSwap;
-import com.aim.project.pwp.heuristics.CX;
-import com.aim.project.pwp.heuristics.DavissHillClimbing;
-import com.aim.project.pwp.heuristics.InversionMutation;
-import com.aim.project.pwp.heuristics.NextDescent;
-import com.aim.project.pwp.heuristics.OX;
-import com.aim.project.pwp.heuristics.Reinsertion;
+import com.aim.project.pwp.heuristics.*;
 import com.aim.project.pwp.instance.InitialisationMode;
 import com.aim.project.pwp.instance.Location;
 import com.aim.project.pwp.instance.reader.PWPInstanceReader;
-import com.aim.project.pwp.interfaces.HeuristicInterface;
-import com.aim.project.pwp.interfaces.ObjectiveFunctionInterface;
-import com.aim.project.pwp.interfaces.PWPInstanceInterface;
-import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-import com.aim.project.pwp.interfaces.Visualisable;
-import com.aim.project.pwp.interfaces.XOHeuristicInterface;
+import com.aim.project.pwp.interfaces.*;
 
 import AbstractClasses.ProblemDomain;
 
 public class AIM_PWP extends ProblemDomain implements Visualisable {
 
-	private String[] instanceFiles = {
-		"square", "libraries-15", "carparks-40", "tramstops-85", "trafficsignals-446", "streetlights-35714"
-	};
-	
-	private PWPSolutionInterface[] aoMemoryOfSolutions;
-	
-	public PWPSolutionInterface oBestSolution;
-	
-	public PWPInstanceInterface oInstance;
-	
-	private HeuristicInterface[] aoHeuristics;
-	
-	private ObjectiveFunctionInterface oObjectiveFunction;
-	
-	private final long seed;
-		
-	public AIM_PWP(long seed) {
-		
-		super(seed);
+  private String[] instanceFiles = {
+    "square",
+    "libraries-15",
+    "carparks-40",
+    "tramstops-85",
+    "trafficsignals-446",
+    "streetlights-35714"
+  };
 
-		// TODO - set default memory size and create the array of low-level heuristics
-		
-	}
-	
-	public PWPSolutionInterface getSolution(int index) {
-		
-		// TODO 
-	}
-	
-	public PWPSolutionInterface getBestSolution() {
-		
-		// TODO 
-	}
+  private PWPSolutionInterface[] aoMemoryOfSolutions;
 
-	@Override
-	public double applyHeuristic(int hIndex, int currentIndex, int candidateIndex) {
-		
-		// TODO - apply heuristic and return the objective value of the candidate solution
-		//			remembering to keep track/update the best solution
-	}
+  public PWPSolutionInterface oBestSolution;
 
-	@Override
-	public double applyHeuristic(int hIndex, int parent1Index, int parent2Index, int candidateIndex) {
-		
-		// TODO - apply heuristic and return the objective value of the candidate solution
-		//			remembering to keep track/update the best solution
-	}
+  public PWPInstanceInterface oInstance;
 
-	@Override
-	public String bestSolutionToString() {
-		
-		// TODO return the location IDs of the best solution including DEPOT and HOME locations
-		//		e.g. "DEPOT -> 0 -> 2 -> 1 -> HOME"
-	}
+  private HeuristicInterface[] aoHeuristics;
 
-	@Override
-	public boolean compareSolutions(int iIndexA, int iIndexB) {
+  private ObjectiveFunctionInterface oObjectiveFunction;
 
-		// TODO return true if the objective values of the two solutions are the same, else false
-	}
+  private final long seed;
 
-	@Override
-	public void copySolution(int iIndexA, int iIndexB) {
+  private final int NUMBER_OF_HEURISTICS = 7;
+  private final int[] mutations = new int[] {0, 1, 2};
+  private final int[] localSearches = new int[] {3, 4};
+  private final int[] crossovers = new int[] {5, 6};
+  private final int[] heuristicsUseDOS = new int[] {3, 4};
+  private final int[] heuristicsUseIOM = new int[] {0, 1, 2, 5, 6};
 
-		// TODO - BEWARE this should copy the solution, not the reference to it!
-		//			That is, that if we apply a heuristic to the solution in index 'b',
-		//			then it does not modify the solution in index 'a' or vice-versa.
-		
-		
-	}
+  /**
+   * TODO - set default memory size and create the array of low-level heuristics
+   *
+   * @param seed
+   */
+  public AIM_PWP(long seed) {
+    super(seed); // set default memory size, rng, DOS and IOM
+    this.seed = seed;
 
-	@Override
-	public double getBestSolutionValue() {
+    aoHeuristics =
+        new HeuristicInterface[] {
+          new InversionMutation(rng),
+          new AdjacentSwap(rng),
+          new Reinsertion(rng),
+          new NextDescent(rng),
+          new DavissHillClimbing(rng),
+          new OX(rng),
+          new CX(rng)
+        };
+  }
 
-		// TODO
-	}
-	
-	@Override
-	public double getFunctionValue(int index) {
-		
-		// TODO
-	}
+  public PWPSolutionInterface getSolution(int index) {
+    return this.aoMemoryOfSolutions[index];
+  }
 
-	@Override
-	public int[] getHeuristicsOfType(HeuristicType type) {
-		
-		// TODO return an array of heuristic IDs based on the heuristic's type.
-		
-	}
+  public PWPSolutionInterface getBestSolution() {
+    return this.oBestSolution;
+  }
 
-	@Override
-	public int[] getHeuristicsThatUseDepthOfSearch() {
-		
-		// TODO return the array of heuristic IDs that use depth of search.
-	}
+  @Override
+  public double applyHeuristic(int hIndex, int currentIndex, int candidateIndex) {
+    this.copySolution(currentIndex, candidateIndex);
 
-	@Override
-	public int[] getHeuristicsThatUseIntensityOfMutation() {
-		
-		// TODO return the array of heuristic IDs that use intensity of mutation.
-	}
+    this.aoHeuristics[hIndex].apply(getSolution(candidateIndex), this.depthOfSearch, this.intensityOfMutation);
 
-	@Override
-	public int getNumberOfHeuristics() {
+    verifyBestSolution(candidateIndex);
 
-		// TODO - has to be hard-coded due to the design of the HyFlex framework...
-		return 7;
-	}
+    return getFunctionValue(candidateIndex);
+  }
 
-	@Override
-	public int getNumberOfInstances() {
+  @Override
+  public double applyHeuristic(int hIndex, int parent1Index, int parent2Index, int candidateIndex) {
+    if (!isCrossover(hIndex)) {
+      return applyHeuristic(hIndex, parent1Index, candidateIndex);
+    }
 
-		// TODO return the number of available instances
-	}
+    this.copySolution(parent1Index, candidateIndex);
 
-	@Override
-	public void initialiseSolution(int index) {
-		
-		// TODO - initialise a solution in index 'index' 
-		// 		making sure that you also update the best solution!
-		
-	}
+    XOHeuristicInterface XOHeuristic = (XOHeuristicInterface) this.aoHeuristics[hIndex];
+    XOHeuristic.apply(
+        getSolution(parent1Index),
+        getSolution(parent2Index),
+        getSolution(candidateIndex),
+        this.depthOfSearch,
+        this.intensityOfMutation);
 
-	// TODO implement the instance reader that this method uses
-	//		to correctly read in the PWP instance, and set up the objective function.
-	@Override
-	public void loadInstance(int instanceId) {
+    return getFunctionValue(candidateIndex);
+  }
 
-		String SEP = FileSystems.getDefault().getSeparator();
-		String instanceName = "instances" + SEP + "pwp" + SEP + instanceFiles[instanceId] + ".pwp";
+  private boolean isCrossover(int hIndex) {
+    return Arrays.binarySearch(crossovers, hIndex) > 0;
+  }
 
-		Path path = Paths.get(instanceName);
-		Random random = new Random(seed);
-		PWPInstanceReader oPwpReader = new PWPInstanceReader();
-		oInstance = oPwpReader.readPWPInstance(path, random);
+  @Override
+  public String bestSolutionToString() {
+    return this.oBestSolution.toString();
+  }
 
-		oObjectiveFunction = oInstance.getPWPObjectiveFunction();
-		
-		for(HeuristicInterface h : aoHeuristics) {
-			h.setObjectiveFunction(oObjectiveFunction);
-		}
-	}
+  @Override
+  public boolean compareSolutions(int iIndexA, int iIndexB) {
+    int[] r1 = this.aoMemoryOfSolutions[iIndexA].getSolutionRepresentation().getSolutionRepresentation();
+    int[] r2 = this.aoMemoryOfSolutions[iIndexB].getSolutionRepresentation().getSolutionRepresentation();
 
-	@Override
-	public void setMemorySize(int size) {
+    for (int i = 0; i < r1.length; i++) {
+      if (r1[i] != r2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-		// TODO sets a new memory size
-		// IF the memory size is INCREASED, then
-		//		the existing solutions should be copied to the new memory at the same indices.
-		// IF the memory size is DECREASED, then
-		//		the first 'size' solutions are copied to the new memory.
-	}
+  @Override
+  public void copySolution(int source, int destination) {
+    this.aoMemoryOfSolutions[destination] = this.aoMemoryOfSolutions[source].clone();
+  }
 
-	@Override
-	public String solutionToString(int index) {
+  @Override
+  public double getBestSolutionValue() {
+    return this.oBestSolution.getObjectiveFunctionValue();
+  }
 
-		// TODO
+  @Override
+  public double getFunctionValue(int index) {
+    return this.aoMemoryOfSolutions[index].getObjectiveFunctionValue();
+  }
 
-	}
+  @Override
+  public int[] getHeuristicsOfType(HeuristicType type) {
+    switch (type) {
+      case MUTATION:
+        return this.mutations;
+      case LOCAL_SEARCH:
+        return this.localSearches;
+      case CROSSOVER:
+        return this.crossovers;
+      default:
+        return null;
+    }
+  }
 
-	@Override
-	public String toString() {
+  @Override
+  public int[] getHeuristicsThatUseDepthOfSearch() {
+    return heuristicsUseDOS;
+  }
 
-		// TODO change 'AAA' to be your username
-		return "AAA's G52AIM PWP";
-	}
-	
-	private void updateBestSolution(int index) {
-		
-		// TODO
-		
-	}
-	
-	@Override
-	public PWPInstanceInterface getLoadedInstance() {
+  @Override
+  public int[] getHeuristicsThatUseIntensityOfMutation() {
+    return heuristicsUseIOM;
+  }
 
-		return this.oInstance;
-	}
+  @Override
+  public int getNumberOfHeuristics() {
+    return NUMBER_OF_HEURISTICS;
+  }
 
-	@Override
-	public Location[] getRouteOrderedByLocations() {
+  @Override
+  public int getNumberOfInstances() {
+    return instanceFiles.length;
+  }
 
-		int[] city_ids = getBestSolution().getSolutionRepresentation().getSolutionRepresentation();
-		Location[] route = Arrays.stream(city_ids).boxed().map(getLoadedInstance()::getLocationForDelivery).toArray(Location[]::new);
-		return route;
-	}
+  /**
+   * This function initialise a solution in index {@code index} and try to update the best solution.
+   *
+   * @param index TODO
+   */
+  @Override
+  public void initialiseSolution(int index) {
+    this.aoMemoryOfSolutions[index] = oInstance.createSolution(InitialisationMode.RANDOM);
+    this.verifyBestSolution(index);
+  }
+
+  /**
+   * TODO
+   *
+   * <p>implement the instance reader that this method uses to correctly read in the PWP instance,
+   * and set up the objective function.
+   *
+   * @param instanceId
+   */
+  @Override
+  public void loadInstance(int instanceId) {
+
+    String SEP = FileSystems.getDefault().getSeparator();
+    String instanceName = "instances" + SEP + "pwp" + SEP + instanceFiles[instanceId] + ".pwp";
+
+    Path path = Paths.get(instanceName);
+    Random random = new Random(seed);
+    PWPInstanceReader oPwpReader = new PWPInstanceReader();
+    oInstance = oPwpReader.readPWPInstance(path, random);
+
+    oObjectiveFunction = oInstance.getPWPObjectiveFunction();
+
+    for (HeuristicInterface h : aoHeuristics) {
+      h.setObjectiveFunction(oObjectiveFunction);
+    }
+  }
+
+  /**
+   * The function sets a new solution memory size.
+   *
+   * <p>If the memory size is INCREASED, then the existing solutions would be copied to the new
+   * memory at the same indices. If the memory size is DECREASED, then the first {@code size}
+   * solutions are copied to the new memory.
+   *
+   * @param size The size of new memory.
+   */
+  @Override
+  public void setMemorySize(int size) {
+    PWPSolutionInterface[] tempMemory = new PWPSolutionInterface[size];
+    if (this.aoMemoryOfSolutions != null) {
+      int srcPos = 0, destPos = 0;
+      int bound = Math.min(size, aoMemoryOfSolutions.length);
+      System.arraycopy(this.aoMemoryOfSolutions, srcPos, tempMemory, destPos, bound);
+    }
+    this.aoMemoryOfSolutions = tempMemory;
+  }
+
+  @Override
+  public String solutionToString(int index) {
+    return this.aoMemoryOfSolutions[index].toString();
+  }
+
+  @Override
+  public String toString() {
+    return "slyly2's G52AIM PWP";
+  }
+
+  /**
+   * TODO
+   *
+   * @param index The index
+   */
+  private void verifyBestSolution(int index) {
+    if (this.oBestSolution == null || getFunctionValue(index) < getBestSolutionValue()) {
+      this.oBestSolution = getSolution(index);
+    }
+  }
+
+  @Override
+  public PWPInstanceInterface getLoadedInstance() {
+    return this.oInstance;
+  }
+
+  @Override
+  public Location[] getRouteOrderedByLocations() {
+    int[] city_ids = getBestSolution().getSolutionRepresentation().getSolutionRepresentation();
+    Location[] route =
+        Arrays.stream(city_ids)
+            .boxed()
+            .map(getLoadedInstance()::getLocationForDelivery)
+            .toArray(Location[]::new);
+    return route;
+  }
 }

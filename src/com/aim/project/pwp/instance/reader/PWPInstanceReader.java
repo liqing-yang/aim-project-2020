@@ -40,7 +40,7 @@ public class PWPInstanceReader implements PWPInstanceReaderInterface {
       }
 
       int numberOfLocations = aoLocations.size() + 2;
-      Location[] locations = (Location[]) aoLocations.toArray();
+      Location[] locations = aoLocations.toArray(new Location[0]);
 
       return new PWPInstance(numberOfLocations, locations, depotLocation, homeLocation, random);
 

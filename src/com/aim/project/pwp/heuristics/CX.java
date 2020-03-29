@@ -20,34 +20,32 @@ public class CX implements XOHeuristicInterface {
 
 	@Override
 	public double apply(PWPSolutionInterface solution, double depthOfSearch, double intensityOfMutation) {
-
+		return solution.getObjectiveFunctionValue();
 	}
 
 	@Override
-	public double apply(PWPSolutionInterface p1, PWPSolutionInterface p2,
-			PWPSolutionInterface c, double depthOfSearch, double intensityOfMutation) {
-		
+	public double apply(PWPSolutionInterface p1, PWPSolutionInterface p2, PWPSolutionInterface c, double depthOfSearch, double intensityOfMutation) {
+		return c.getObjectiveFunctionValue();
 	}
 
 	@Override
 	public boolean isCrossover() {
-
+		return true;
 	}
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
+		return true;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
+		return false;
 	}
 
 
 	@Override
 	public void setObjectiveFunction(ObjectiveFunctionInterface oObjectiveFunction) {
-		
 		this.oObjectiveFunction = oObjectiveFunction;
 	}
 }
