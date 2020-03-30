@@ -31,10 +31,7 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
       if (first == numberOfDeliveryLocations - 1) {
         cost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
       }
-
-      if (cost < 0) {
-        System.out.println("Wa");
-      }
+      
       swapLocations(deliveryLocations, first, second);
 
       cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
