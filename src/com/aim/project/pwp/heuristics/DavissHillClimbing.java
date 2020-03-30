@@ -26,19 +26,29 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
     int[] deliveryLocations = oSolution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = oSolution.getSolutionRepresentation().getNumberOfLocations();
 
-    double bestEval = oSolution.getObjectiveFunctionValue();
+    double cost = oSolution.getObjectiveFunctionValue();
 
     while (times > 0) {
       int[] perm = RandomUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, oRandom);
 
       for (int i = 0; i < numberOfDeliveryLocations; i++) {
       	int adjacent = perm[i] + 1 == numberOfDeliveryLocations ? 0 : perm[i] + 1;
+
+      	double tempCost = cost;
+        tempCost -= getCostBtwPredAnd(deliveryLocations, perm[i]) + getCostBtwSuccAnd(deliveryLocations, adjacent);
+        if (perm[i] == numberOfDeliveryLocations - 1) {
+          tempCost -= getCostBtwSuccAnd(deliveryLocations, perm[i]) + getCostBtwPredAnd(deliveryLocations, adjacent);
+        }
+
       	swapLocations(deliveryLocations, perm[i], adjacent);
 
-      	double tmpEval = this.oObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
+        tempCost += getCostBtwPredAnd(deliveryLocations, perm[i]) + getCostBtwSuccAnd(deliveryLocations, adjacent);
+        if (perm[i] == numberOfDeliveryLocations - 1) {
+          tempCost += getCostBtwSuccAnd(deliveryLocations, perm[i]) + getCostBtwPredAnd(deliveryLocations, adjacent);
+        }
 
-      	if (tmpEval < bestEval) {
-      		bestEval = tmpEval;
+      	if (tempCost < cost) {
+      		cost = tempCost;
 				} else {
       		swapLocations(deliveryLocations, perm[i], adjacent);
 				}
@@ -47,8 +57,8 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
       times--;
     }
 
-    oSolution.setObjectiveFunctionValue(bestEval);
-    return bestEval;
+    oSolution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   @Override

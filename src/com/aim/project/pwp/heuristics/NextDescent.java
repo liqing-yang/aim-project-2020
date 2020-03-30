@@ -25,27 +25,37 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
     int[] deliveryLocations = oSolution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = oSolution.getSolutionRepresentation().getNumberOfLocations();
 
-    double bestEval = oSolution.getObjectiveFunctionValue();
+    double cost = oSolution.getObjectiveFunctionValue();
 
     int start = oRandom.nextInt(numberOfDeliveryLocations);
 
     for (int i = 0; i < numberOfDeliveryLocations && times > 0; i++) {
       int first = (start + i) % numberOfDeliveryLocations;
       int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
+
+      double tempCost = cost;
+      tempCost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      if (first == numberOfDeliveryLocations - 1) {
+        tempCost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
+      }
+
       swapLocations(deliveryLocations, first, second);
 
-      double tmpEval = this.oObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
+      tempCost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      if (first == numberOfDeliveryLocations - 1) {
+        tempCost += getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
+      }
 
-      if (tmpEval < bestEval) {
-        bestEval = tmpEval;
+      if (tempCost < cost) {
+        cost = tempCost;
         times--;
       } else {
         swapLocations(deliveryLocations, first, second);
       }
     }
 
-    oSolution.setObjectiveFunctionValue(bestEval);
-    return bestEval;
+    oSolution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   @Override

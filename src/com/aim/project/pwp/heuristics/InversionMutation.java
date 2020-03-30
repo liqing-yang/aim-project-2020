@@ -21,6 +21,8 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
     int[] deliveryLocations = oSolution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = oSolution.getSolutionRepresentation().getNumberOfLocations();
 
+    double cost = oSolution.getObjectiveFunctionValue();
+
     while (times > 0) {
       // randomly select two locations and the first location is visited before the second
       int first = oRandom.nextInt(numberOfDeliveryLocations);
@@ -29,15 +31,17 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
         second = oRandom.nextInt(numberOfDeliveryLocations);
       }
 
+      cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+
       reverse(deliveryLocations, first, second);
+
+      cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
 
       times--;
     }
 
-    double functionValue = this.oObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
-    oSolution.setObjectiveFunctionValue(functionValue);
-
-    return functionValue;
+    oSolution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   private void reverse(int[] array, int from, int to) {

@@ -21,18 +21,32 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
     int[] deliveryLocations = solution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = solution.getSolutionRepresentation().getNumberOfLocations();
 
+    double cost = solution.getObjectiveFunctionValue();
+
     while (times > 0) {
       int first = oRandom.nextInt(numberOfDeliveryLocations);
-      int second = (first + 1 == numberOfDeliveryLocations) ? 0 : first + 1;
+      int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
+
+      cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      if (first == numberOfDeliveryLocations - 1) {
+        cost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
+      }
+
+      if (cost < 0) {
+        System.out.println("Wa");
+      }
       swapLocations(deliveryLocations, first, second);
+
+      cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      if (first == numberOfDeliveryLocations - 1) {
+        cost += getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
+      }
 
       times--;
     }
 
-    double functionValue = this.oObjectiveFunction.getObjectiveFunctionValue(solution.getSolutionRepresentation());
-    solution.setObjectiveFunctionValue(functionValue);
-
-    return functionValue;
+    solution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   @Override
