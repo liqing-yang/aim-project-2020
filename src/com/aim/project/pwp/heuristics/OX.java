@@ -1,11 +1,6 @@
 package com.aim.project.pwp.heuristics;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import com.aim.project.pwp.interfaces.ObjectiveFunctionInterface;
-import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-import com.aim.project.pwp.interfaces.XOHeuristicInterface;
 
 public class OX extends XOHeuristic {
 

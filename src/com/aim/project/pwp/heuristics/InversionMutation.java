@@ -4,15 +4,11 @@ import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-import com.aim.project.pwp.interfaces.SolutionRepresentationInterface;
 
 public class InversionMutation extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public InversionMutation(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
@@ -22,23 +18,30 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
     int[] deliveryLocations = oSolution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = oSolution.getSolutionRepresentation().getNumberOfLocations();
 
+    double cost = oSolution.getObjectiveFunctionValue();
+
     while (times > 0) {
       // randomly select two locations and the first location is visited before the second
-      int first = oRandom.nextInt(numberOfDeliveryLocations);
-      int second = oRandom.nextInt(numberOfDeliveryLocations);
-      while (first > second) {
-        second = oRandom.nextInt(numberOfDeliveryLocations);
+      int number1 = oRandom.nextInt(numberOfDeliveryLocations);
+      int number2 = oRandom.nextInt(numberOfDeliveryLocations);
+      while (number1 == number2) {
+        number2 = oRandom.nextInt(numberOfDeliveryLocations);
       }
 
+      int first = Math.min(number1, number2);
+      int second = Math.max(number1, number2);
+
+      cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+
       reverse(deliveryLocations, first, second);
+
+      cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
 
       times--;
     }
 
-    double functionValue = this.oObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
-    oSolution.setObjectiveFunctionValue(functionValue);
-
-    return functionValue;
+    oSolution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   private void reverse(int[] array, int from, int to) {

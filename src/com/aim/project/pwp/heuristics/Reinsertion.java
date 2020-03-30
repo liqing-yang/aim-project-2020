@@ -7,11 +7,8 @@ import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
 public class Reinsertion extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public Reinsertion(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
@@ -21,30 +18,36 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
     int[] deliveryLocations = solution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = solution.getSolutionRepresentation().getNumberOfLocations();
 
+    double cost = solution.getObjectiveFunctionValue();
+
     while (times > 0) {
       // randomly select a delivery location and find a different place for it
-      int originIndex = oRandom.nextInt(numberOfDeliveryLocations);
+      int originalIndex = oRandom.nextInt(numberOfDeliveryLocations);
       int reinsertedIndex = oRandom.nextInt(numberOfDeliveryLocations);
-      if (originIndex == reinsertedIndex) {
+      if (originalIndex == reinsertedIndex) {
         reinsertedIndex = reinsertedIndex + 1 == numberOfDeliveryLocations ? 0 : reinsertedIndex + 1;
       }
 
-      int origin = deliveryLocations[originIndex];
+      cost -= getCostBtwPredAndSuccOf(deliveryLocations, originalIndex);
+      cost -= originalIndex < reinsertedIndex ? getCostBtwSuccAnd(deliveryLocations, reinsertedIndex) : getCostBtwPredAnd(deliveryLocations, reinsertedIndex);
+
+      int origin = deliveryLocations[originalIndex];
 
       // move elements between the original position and the new position
-      int startPos = Math.min(originIndex + 1, reinsertedIndex);
-      int length = Math.abs(reinsertedIndex - originIndex);
-      moveByOffset(deliveryLocations, startPos, length, Integer.compare(originIndex, reinsertedIndex));
+      int startPos = Math.min(originalIndex + 1, reinsertedIndex);
+      int length = Math.abs(reinsertedIndex - originalIndex);
+      moveByOffset(deliveryLocations, startPos, length, Integer.compare(originalIndex, reinsertedIndex));
 
       deliveryLocations[reinsertedIndex] = origin;
+
+      cost += getCostBtwPredAndSuccOf(deliveryLocations, reinsertedIndex);
+      cost += originalIndex < reinsertedIndex ? getCostBtwPredAnd(deliveryLocations, originalIndex) : getCostBtwSuccAnd(deliveryLocations, originalIndex);
 
       times--;
     }
 
-    double functionValue = this.oObjectiveFunction.getObjectiveFunctionValue(solution.getSolutionRepresentation());
-    solution.setObjectiveFunctionValue(functionValue);
-
-    return functionValue;
+    solution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   /**

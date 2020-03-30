@@ -11,11 +11,8 @@ import com.aim.project.pwp.interfaces.PWPSolutionInterface;
  */
 public class NextDescent extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public NextDescent(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
@@ -25,27 +22,26 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
     int[] deliveryLocations = oSolution.getSolutionRepresentation().getSolutionRepresentation();
     int numberOfDeliveryLocations = oSolution.getSolutionRepresentation().getNumberOfLocations();
 
-    double bestEval = oSolution.getObjectiveFunctionValue();
+    double cost = oSolution.getObjectiveFunctionValue();
 
     int start = oRandom.nextInt(numberOfDeliveryLocations);
 
     for (int i = 0; i < numberOfDeliveryLocations && times > 0; i++) {
       int first = (start + i) % numberOfDeliveryLocations;
       int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
-      swapLocations(deliveryLocations, first, second);
 
-      double tmpEval = this.oObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
+      double newCost = adjacentSwap(deliveryLocations, first, second, cost);
 
-      if (tmpEval < bestEval) {
-        bestEval = tmpEval;
+      if (newCost < cost) {
+        cost = newCost;
         times--;
       } else {
         swapLocations(deliveryLocations, first, second);
       }
     }
 
-    oSolution.setObjectiveFunctionValue(bestEval);
-    return bestEval;
+    oSolution.setObjectiveFunctionValue(cost);
+    return cost;
   }
 
   @Override
