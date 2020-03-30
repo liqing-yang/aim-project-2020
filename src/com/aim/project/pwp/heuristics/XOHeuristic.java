@@ -31,18 +31,16 @@ public abstract class XOHeuristic implements XOHeuristicInterface {
 
     int numberOfDeliveryLocations = c.getSolutionRepresentation().getNumberOfLocations();
 
-    List<Integer> parent1 = Arrays.stream(deliveryLocationsP1).boxed().collect(Collectors.toList());
-    List<Integer> parent2 = Arrays.stream(deliveryLocationsP2).boxed().collect(Collectors.toList());
+    int[] child1 = deliveryLocationsP1.clone();
+    int[] child2 = deliveryLocationsP2.clone();
 
     while (times > 0) {
-      crossoverAlgorithm(parent1, parent2, numberOfDeliveryLocations);
+      crossoverAlgorithm(child1, child2, numberOfDeliveryLocations);
       times--;
     }
 
-    List<Integer> candidate = oRandom.nextDouble() >= 0.5 ? parent1 : parent2;
-
-    int[] newRepresentation = candidate.stream().mapToInt(i -> i).toArray();
-    c.getSolutionRepresentation().setSolutionRepresentation(newRepresentation);
+    int[] candidate = oRandom.nextDouble() >= 0.5 ? child1 : child2;
+    c.getSolutionRepresentation().setSolutionRepresentation(candidate);
 
     double functionValue = this.oObjectiveFunction.getObjectiveFunctionValue(c.getSolutionRepresentation());
     c.setObjectiveFunctionValue(functionValue);
@@ -50,7 +48,7 @@ public abstract class XOHeuristic implements XOHeuristicInterface {
     return functionValue;
   }
 
-  protected abstract void crossoverAlgorithm(List<Integer> parent1, List<Integer> parent2, int numberOfDeliveryLocations);
+  protected abstract void crossoverAlgorithm(int[] child1, int[] child2, int numberOfDeliveryLocations);
 
   @Override
   public boolean isCrossover() {
