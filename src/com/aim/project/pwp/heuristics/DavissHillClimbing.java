@@ -34,7 +34,7 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
       	double newCost = adjacentSwap(deliveryLocations, first, second, cost);
 
-      	if (newCost < cost) {
+      	if (newCost <= cost) {
       		cost = newCost;
 				} else {
       		swapLocations(deliveryLocations, first, second);
