@@ -1,9 +1,11 @@
 package com.aim.project.pwp.heuristics;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
+import com.aim.project.pwp.utilities.ArrayUtils;
 import com.aim.project.pwp.utilities.RandomUtils;
 
 /**
@@ -34,10 +36,10 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
       	double newCost = adjacentSwap(deliveryLocations, first, second, cost);
 
-      	if (newCost < cost) {
+      	if (newCost <= cost) {
       		cost = newCost;
 				} else {
-      		swapLocations(deliveryLocations, first, second);
+          ArrayUtils.INSTANCE.swap(deliveryLocations, first, second);
 				}
 			}
 

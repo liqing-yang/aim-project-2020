@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
+import com.aim.project.pwp.utilities.ArrayUtils;
 
 /**
  * @author Warren G. Jackson Performs adjacent swap, returning the first solution with strict
@@ -36,7 +37,7 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
         cost = newCost;
         times--;
       } else {
-        swapLocations(deliveryLocations, first, second);
+        ArrayUtils.INSTANCE.swap(deliveryLocations, first, second);
       }
     }
 
