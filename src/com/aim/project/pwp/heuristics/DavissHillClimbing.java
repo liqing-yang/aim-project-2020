@@ -12,11 +12,8 @@ import com.aim.project.pwp.utilities.RandomUtils;
  */
 public class DavissHillClimbing extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public DavissHillClimbing(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
@@ -35,21 +32,10 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
         int first = perm[i];
         int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
 
-      	double tempCost = cost;
-        tempCost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
-        if (first == numberOfDeliveryLocations - 1) {
-          tempCost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
-        }
+      	double newCost = adjacentSwap(deliveryLocations, first, second, cost);
 
-      	swapLocations(deliveryLocations, first, second);
-
-        tempCost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
-        if (first == numberOfDeliveryLocations - 1) {
-          tempCost += getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
-        }
-
-      	if (tempCost < cost) {
-      		cost = tempCost;
+      	if (newCost < cost) {
+      		cost = newCost;
 				} else {
       		swapLocations(deliveryLocations, first, second);
 				}

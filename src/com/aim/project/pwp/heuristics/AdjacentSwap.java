@@ -7,11 +7,8 @@ import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
 public class AdjacentSwap extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public AdjacentSwap(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
@@ -27,17 +24,7 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
       int first = oRandom.nextInt(numberOfDeliveryLocations);
       int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
 
-      cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
-      if (first == numberOfDeliveryLocations - 1) {
-        cost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
-      }
-      
-      swapLocations(deliveryLocations, first, second);
-
-      cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
-      if (first == numberOfDeliveryLocations - 1) {
-        cost += getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
-      }
+      cost = adjacentSwap(deliveryLocations, first, second, cost);
 
       times--;
     }

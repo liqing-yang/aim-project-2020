@@ -7,11 +7,8 @@ import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
 public class Reinsertion extends HeuristicOperators implements HeuristicInterface {
 
-  private final Random oRandom;
-
   public Reinsertion(Random oRandom) {
-    super();
-    this.oRandom = oRandom;
+    super(oRandom);
   }
 
   @Override
