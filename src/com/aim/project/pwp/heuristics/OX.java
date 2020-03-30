@@ -15,7 +15,7 @@ public class OX extends XOHeuristic {
 
 	@Override
 	protected void crossoverAlgorithm(List<Integer> parent1, List<Integer> parent2, int numberOfDeliveryLocations) {
-		// avoid choose the cut points at the start and end simultaneously
+		// avoid choosing the cut points at the start and end simultaneously
 		int number1 = oRandom.nextInt(numberOfDeliveryLocations);
 		int number2 = oRandom.nextInt(numberOfDeliveryLocations + 1);
 
