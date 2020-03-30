@@ -32,25 +32,26 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
       int[] perm = RandomUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, oRandom);
 
       for (int i = 0; i < numberOfDeliveryLocations; i++) {
-      	int adjacent = perm[i] + 1 == numberOfDeliveryLocations ? 0 : perm[i] + 1;
+        int first = perm[i];
+        int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
 
       	double tempCost = cost;
-        tempCost -= getCostBtwPredAnd(deliveryLocations, perm[i]) + getCostBtwSuccAnd(deliveryLocations, adjacent);
-        if (perm[i] == numberOfDeliveryLocations - 1) {
-          tempCost -= getCostBtwSuccAnd(deliveryLocations, perm[i]) + getCostBtwPredAnd(deliveryLocations, adjacent);
+        tempCost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+        if (first == numberOfDeliveryLocations - 1) {
+          tempCost -= getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
         }
 
-      	swapLocations(deliveryLocations, perm[i], adjacent);
+      	swapLocations(deliveryLocations, first, second);
 
-        tempCost += getCostBtwPredAnd(deliveryLocations, perm[i]) + getCostBtwSuccAnd(deliveryLocations, adjacent);
-        if (perm[i] == numberOfDeliveryLocations - 1) {
-          tempCost += getCostBtwSuccAnd(deliveryLocations, perm[i]) + getCostBtwPredAnd(deliveryLocations, adjacent);
+        tempCost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+        if (first == numberOfDeliveryLocations - 1) {
+          tempCost += getCostBtwSuccAnd(deliveryLocations, first) + getCostBtwPredAnd(deliveryLocations, second);
         }
 
       	if (tempCost < cost) {
       		cost = tempCost;
 				} else {
-      		swapLocations(deliveryLocations, perm[i], adjacent);
+      		swapLocations(deliveryLocations, first, second);
 				}
 			}
 
