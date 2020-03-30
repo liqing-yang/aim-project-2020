@@ -4,7 +4,6 @@ import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-import com.aim.project.pwp.interfaces.SolutionRepresentationInterface;
 
 public class InversionMutation extends HeuristicOperators implements HeuristicInterface {
 

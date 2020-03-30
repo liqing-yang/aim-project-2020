@@ -1,14 +1,8 @@
 package com.aim.project.pwp.heuristics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-
-import com.aim.project.pwp.interfaces.ObjectiveFunctionInterface;
-import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-import com.aim.project.pwp.interfaces.XOHeuristicInterface;
 
 public class CX extends XOHeuristic {
 
