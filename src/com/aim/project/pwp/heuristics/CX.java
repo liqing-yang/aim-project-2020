@@ -22,7 +22,7 @@ public class CX extends XOHeuristic {
       int backup = index;
       int locationInP2 = child2[index];
       index = ArrayUtils.INSTANCE.find(child1, locationInP2);
-      ArrayUtils.INSTANCE.swap(child1, child2, backup);
+      ArrayUtils.INSTANCE.swapBetweenArray(child1, child2, backup);
     } while (index != -1);
   }
 }

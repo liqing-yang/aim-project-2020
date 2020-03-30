@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
+import com.aim.project.pwp.utilities.ArrayUtils;
 
 public class InversionMutation extends HeuristicOperators implements HeuristicInterface {
 
@@ -33,7 +34,7 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
 
       cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
 
-      reverse(deliveryLocations, first, second);
+      ArrayUtils.INSTANCE.reverse(deliveryLocations, first, second);
 
       cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
 
@@ -42,14 +43,6 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
 
     oSolution.setObjectiveFunctionValue(cost);
     return cost;
-  }
-
-  private void reverse(int[] array, int from, int to) {
-    while (from < to) {
-      swapLocations(array, from, to);
-      from++;
-      to--;
-    }
   }
 
   @Override

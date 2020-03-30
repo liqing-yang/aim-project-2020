@@ -1,6 +1,7 @@
 package com.aim.project.pwp.heuristics;
 
 import com.aim.project.pwp.interfaces.ObjectiveFunctionInterface;
+import com.aim.project.pwp.utilities.ArrayUtils;
 
 import java.util.Random;
 
@@ -35,7 +36,7 @@ public class HeuristicOperators {
       cost -= getCostBtwSuccAnd(locations, iIndexA) + getCostBtwPredAnd(locations, iIndexB);
     }
 
-    swapLocations(locations, iIndexA, iIndexB);
+    ArrayUtils.INSTANCE.swap(locations, iIndexA, iIndexB);
 
     cost += getCostBtwPredAnd(locations, iIndexA) + getCostBtwSuccAnd(locations, iIndexB);
     if (iIndexA == numberOfDeliveryLocations - 1) {
@@ -47,12 +48,6 @@ public class HeuristicOperators {
 
   protected int getTimes(double DOSorIOM) {
     return 1 + (int) (DOSorIOM * 10 / 2);
-  }
-
-  protected void swapLocations(int[] array, int iIndexA, int iIndexB) {
-    int temp = array[iIndexA];
-    array[iIndexA] = array[iIndexB];
-    array[iIndexB] = temp;
   }
 
   protected double getCostBtwPredAnd(int[] locations, int index) {
