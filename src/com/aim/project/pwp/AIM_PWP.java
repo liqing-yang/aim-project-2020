@@ -104,7 +104,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   }
 
   private boolean isCrossover(int hIndex) {
-    return Arrays.binarySearch(crossovers, hIndex) > 0;
+    return Arrays.binarySearch(crossovers, hIndex) >= 0;
   }
 
   @Override
