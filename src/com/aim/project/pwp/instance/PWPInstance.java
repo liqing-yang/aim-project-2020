@@ -8,7 +8,7 @@ import com.aim.project.pwp.interfaces.PWPInstanceInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 import com.aim.project.pwp.solution.SolutionRepresentation;
 import com.aim.project.pwp.solution.PWPSolution;
-import com.aim.project.pwp.utilities.RandomUtils;
+import com.aim.project.pwp.utilities.PermutationUtils;
 
 public class PWPInstance implements PWPInstanceInterface {
 
@@ -47,10 +47,10 @@ public class PWPInstance implements PWPInstanceInterface {
 
   @Override
   public PWPSolution createSolution(InitialisationMode mode) {
-    // create random permutation
-    int[] permutation = RandomUtils.INSTANCE.createRandomPermutation(iNumberOfLocations - 2, oRandom);
+    // creates random permutation
+    int[] permutation = PermutationUtils.INSTANCE.createRandomPermutation(iNumberOfLocations - 2, oRandom);
 
-    // create new solution
+    // creates new solution
     SolutionRepresentation representation = new SolutionRepresentation(permutation);
     double functionValue = getPWPObjectiveFunction().getObjectiveFunctionValue(representation);
 
