@@ -4,6 +4,7 @@ import AbstractClasses.HyperHeuristic;
 import AbstractClasses.ProblemDomain;
 import com.aim.project.pwp.AIM_PWP;
 import com.aim.project.pwp.SolutionPrinter;
+import com.aim.project.pwp.hyperheuristics.acceptanceMethods.*;
 import com.aim.project.pwp.hyperheuristics.selectionMethods.*;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
@@ -29,8 +30,17 @@ public class General_HH extends HyperHeuristic {
 
     HeuristicPair[] heuristicPairs = generateHeuristicPairs(problem);
 
-    SelectionInterface[] selections = initialiseSelectionMethods(heuristicPairs, problem, this.rng);
-    SelectionInterface selection = selections[3];
+    SelectionInterface[] selections =
+        new SelectionInterface[] {
+          new SimpleRandom(heuristicPairs, rng),
+          new RandomPermutationDescent(heuristicPairs, rng),
+          new ReinforcementLearning(heuristicPairs, 5, 1, 10, rng),
+          new Greedy(heuristicPairs, rng, problem)
+        };
+    SelectionInterface selection = selections[2];
+
+    AcceptanceInterface[] acceptances = new AcceptanceInterface[] {new AllMoves(), new OnlyImproving(), new EqualAndImproving()};
+    AcceptanceInterface acceptance = acceptances[1];
 
     long iteration = 0;
     System.out.println("Iteration\tf(s)\tf(s')\tAccept");
@@ -40,7 +50,7 @@ public class General_HH extends HyperHeuristic {
 
       double candidateCost = HyFlexUtilities.applyHeuristicPair(problem, heuristicPair);
 
-      boolean accept = candidateCost <= currentCost;
+      boolean accept = acceptance.isAccepted(currentCost, candidateCost);
       selection.updateAcceptedLast(accept);
       if (accept) {
         problem.copySolution(candidateIndex, currentIndex);
@@ -75,14 +85,5 @@ public class General_HH extends HyperHeuristic {
       }
     }
     return heuristicPairs;
-  }
-
-  private SelectionInterface[] initialiseSelectionMethods(HeuristicPair[] heuristicPairs, ProblemDomain problem, Random random) {
-    return new SelectionInterface[] {
-      new SimpleRandom(heuristicPairs, random),
-      new RandomPermutationDescent(heuristicPairs, random),
-      new ReinforcementLearning(heuristicPairs, 15, 1, 30, random),
-      new Greedy(heuristicPairs, random, problem)
-    };
   }
 }
