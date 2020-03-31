@@ -9,24 +9,18 @@ public class ReinforcementLearning extends SelectionMethod {
 
   private int[] heuristicScores;
 
-  private final int defaultScore;
   private final int lowerBound;
   private final int upperBound;
 
   private int lastAppliedPairIndex;
 
-  public ReinforcementLearning(HeuristicPair[] heuristicPairs, Random oRandom) {
-    this(heuristicPairs, 15, 0, 30, oRandom);
-  }
-
   public ReinforcementLearning(HeuristicPair[] heuristicPairs, int defaultScore, int lowerBound, int upperBound, Random oRandom) {
     super(heuristicPairs, oRandom);
 
-    this.defaultScore = defaultScore;
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
 
-    int[] heuristicScores = new int[this.pairsNumber];
+    this.heuristicScores = new int[this.pairsNumber];
     Arrays.fill(heuristicScores, defaultScore);
   }
 

@@ -20,6 +20,7 @@ public abstract class SelectionMethod implements SelectionInterface {
     this.lastAccepted = true;
   }
 
+  @Override
   public void updateAcceptedLast(boolean ifAcceptedLast) {
     this.lastAccepted = ifAcceptedLast;
   }

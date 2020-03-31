@@ -23,4 +23,18 @@ public class HyFlexUtilities {
 					  .flatMapToInt( IntStream::of )
 					  .toArray();
 	}
+
+	public static double applyHeuristicPair(ProblemDomain problem, HeuristicPair heuristicPair) {
+		int first = heuristicPair.getFirst();
+		int second = heuristicPair.getLast();
+
+		if (first < 5) {
+			problem.applyHeuristic(first, 0, 1);
+		} else {
+			problem.initialiseSolution(2);
+			problem.applyHeuristic(first, 0, 2, 1);
+		}
+
+		return problem.applyHeuristic(second, 1, 1);
+	}
 }

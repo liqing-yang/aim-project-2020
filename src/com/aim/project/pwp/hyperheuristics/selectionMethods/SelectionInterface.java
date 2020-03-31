@@ -4,4 +4,6 @@ import com.aim.project.pwp.hyperheuristics.HeuristicPair;
 
 public interface SelectionInterface {
   public HeuristicPair selectHeuristics();
+
+  public void updateAcceptedLast(boolean ifAcceptedLast);
 }
