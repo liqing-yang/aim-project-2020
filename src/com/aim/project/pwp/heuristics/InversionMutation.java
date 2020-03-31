@@ -22,21 +22,23 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
     double cost = oSolution.getObjectiveFunctionValue();
 
     while (times > 0) {
-      // randomly select two locations and the first location is visited before the second
+      // generates two different random numbers
       int number1 = oRandom.nextInt(numberOfDeliveryLocations);
       int number2 = oRandom.nextInt(numberOfDeliveryLocations);
       while (number1 == number2) {
         number2 = oRandom.nextInt(numberOfDeliveryLocations);
       }
 
-      int first = Math.min(number1, number2);
-      int second = Math.max(number1, number2);
+      // makes the smaller the start and the larger the end
+      int start = Math.min(number1, number2);
+      int end = Math.max(number1, number2);
 
-      cost -= getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      // TODO
+      cost -= getCostBtwPredAnd(deliveryLocations, start) + getCostBtwSuccAnd(deliveryLocations, end);
 
-      ArrayUtils.INSTANCE.reverse(deliveryLocations, first, second);
+      ArrayUtils.INSTANCE.reverse(deliveryLocations, start, end);
 
-      cost += getCostBtwPredAnd(deliveryLocations, first) + getCostBtwSuccAnd(deliveryLocations, second);
+      cost += getCostBtwPredAnd(deliveryLocations, start) + getCostBtwSuccAnd(deliveryLocations, end);
 
       times--;
     }

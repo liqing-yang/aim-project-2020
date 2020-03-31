@@ -11,18 +11,29 @@ public class CX extends XOHeuristic {
   }
 
   @Override
-  protected void crossoverAlgorithm(int[] child1, int[] child2, int numberOfDeliveryLocations) {
+  protected void crossoverAlgorithm(int[] parent1, int[] parent2, int numberOfDeliveryLocations) {
+    // chooses a starting point randomly
     int index = oRandom.nextInt(numberOfDeliveryLocations);
 
-    if (child1[index] == child2[index]) {
-    	return;
-		}
+    // if the locations at the index are the same, a cycle is already completed
+    if (parent1[index] == parent2[index]) {
+      return;
+    }
 
     do {
+      // backs up current index for later use
       int backup = index;
-      int locationInP2 = child2[index];
-      index = ArrayUtils.INSTANCE.find(child1, locationInP2);
-      ArrayUtils.INSTANCE.swapBetweenArray(child1, child2, backup);
-    } while (index != -1);
+
+      // gets the location at current index in parent2
+      int locationInP2 = parent2[index];
+
+      // gets the index of the location in parent1;
+      // index will be -1 if the location is not found, which means if the location is copied to
+      // parent1 there will be no conflict and the cycle is completed.
+      index = ArrayUtils.INSTANCE.find(parent1, locationInP2);
+
+      // swaps the locations at the backup index
+      ArrayUtils.INSTANCE.swapBetweenArray(parent1, parent2, backup);
+    } while (index != -1); // cycle completed
   }
 }

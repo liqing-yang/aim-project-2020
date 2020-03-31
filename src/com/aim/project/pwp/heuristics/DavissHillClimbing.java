@@ -1,12 +1,11 @@
 package com.aim.project.pwp.heuristics;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 import com.aim.project.pwp.utilities.ArrayUtils;
-import com.aim.project.pwp.utilities.RandomUtils;
+import com.aim.project.pwp.utilities.PermutationUtils;
 
 /**
  * @author Warren G. Jackson Performs adjacent swap, returning the first solution with strict
@@ -28,17 +27,22 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
     double cost = oSolution.getObjectiveFunctionValue();
 
     while (times > 0) {
-      int[] perm = RandomUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, oRandom);
+      // randomise the order in which the delivery locations are tried
+      int[] perm = PermutationUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, oRandom);
 
       for (int i = 0; i < numberOfDeliveryLocations; i++) {
+        // chooses a location randomly and gets the location visited after it
         int first = perm[i];
         int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
 
+        // swap the locations and updates the cost using delta function
       	double newCost = adjacentSwap(deliveryLocations, first, second, cost);
 
       	if (newCost <= cost) {
+      	  // accepts IE solutions
       		cost = newCost;
 				} else {
+      	  // rejects
           ArrayUtils.INSTANCE.swap(deliveryLocations, first, second);
 				}
 			}

@@ -112,10 +112,11 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
     return this.oBestSolution.toString();
   }
 
+  /** Checks if the two solutions at the index {@code indexA} and {@code indexB} are the same. */
   @Override
-  public boolean compareSolutions(int iIndexA, int iIndexB) {
-    int[] r1 = this.aoMemoryOfSolutions[iIndexA].getSolutionRepresentation().getSolutionRepresentation();
-    int[] r2 = this.aoMemoryOfSolutions[iIndexB].getSolutionRepresentation().getSolutionRepresentation();
+  public boolean compareSolutions(int indexA, int indexB) {
+    int[] r1 = this.aoMemoryOfSolutions[indexA].getSolutionRepresentation().getSolutionRepresentation();
+    int[] r2 = this.aoMemoryOfSolutions[indexB].getSolutionRepresentation().getSolutionRepresentation();
 
     for (int i = 0; i < r1.length; i++) {
       if (r1[i] != r2[i]) {
@@ -175,9 +176,8 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   }
 
   /**
-   * This function initialise a solution in index {@code index} and try to update the best solution.
-   *
-   * @param index TODO
+   * This function initialises a solution at index {@code index} and tries to update the best
+   * solution.
    */
   @Override
   public void initialiseSolution(int index) {

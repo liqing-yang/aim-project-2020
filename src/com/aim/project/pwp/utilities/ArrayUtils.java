@@ -1,12 +1,31 @@
 package com.aim.project.pwp.utilities;
 
+/**
+ * The {@code ArrayUtils} class contains utilities about array.
+ *
+ * <p><b>Note:</b> this class is a singleton with {@link Enum}.
+ */
 public enum ArrayUtils {
   INSTANCE;
 
+  /**
+   * TODO
+   *
+   * @param array The search space.
+   * @param target The target TODO
+   * @return {@code true} if the array contains the target; {@code false} otherwise.
+   */
   public boolean contains(int[] array, int target) {
     return find(array, target) >= 0;
   }
 
+  /**
+   * TODO
+   *
+   * @param array The search space.
+   * @param target The target needs to be found.
+   * @return The index of the target if the array contains the target; -1 otherwise.
+   */
   public int find(int[] array, int target) {
     int length = array.length;
     for (int i = 0; i < length; i++) {
@@ -35,5 +54,9 @@ public enum ArrayUtils {
       from++;
       to--;
     }
+  }
+
+  public void moveByOffset(int[] array, int startPos, int length, int offset) {
+    System.arraycopy(array, startPos, array, startPos + offset, length);
   }
 }
