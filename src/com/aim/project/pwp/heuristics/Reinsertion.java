@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
+import com.aim.project.pwp.utilities.ArrayUtils;
 
 public class Reinsertion extends HeuristicOperators implements HeuristicInterface {
 
@@ -22,44 +23,33 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 
     while (times > 0) {
       // randomly select a delivery location and find a different place for it
-      int originalIndex = oRandom.nextInt(numberOfDeliveryLocations);
-      int reinsertedIndex = oRandom.nextInt(numberOfDeliveryLocations);
-      if (originalIndex == reinsertedIndex) {
-        reinsertedIndex = reinsertedIndex + 1 == numberOfDeliveryLocations ? 0 : reinsertedIndex + 1;
+      int oldIndex = oRandom.nextInt(numberOfDeliveryLocations);
+      int newIndex = oRandom.nextInt(numberOfDeliveryLocations);
+      if (oldIndex == newIndex) {
+        newIndex = newIndex + 1 == numberOfDeliveryLocations ? 0 : newIndex + 1;
       }
 
-      cost -= getCostBtwPredAndSuccOf(deliveryLocations, originalIndex);
-      cost -= originalIndex < reinsertedIndex ? getCostBtwSuccAnd(deliveryLocations, reinsertedIndex) : getCostBtwPredAnd(deliveryLocations, reinsertedIndex);
+      cost -= getCostBtwPredAndSuccOf(deliveryLocations, oldIndex);
+      cost -= oldIndex < newIndex ? getCostBtwSuccAnd(deliveryLocations, newIndex) : getCostBtwPredAnd(deliveryLocations, newIndex);
 
-      int origin = deliveryLocations[originalIndex];
+      int origin = deliveryLocations[oldIndex];
 
       // move elements between the original position and the new position
-      int startPos = Math.min(originalIndex + 1, reinsertedIndex);
-      int length = Math.abs(reinsertedIndex - originalIndex);
-      moveByOffset(deliveryLocations, startPos, length, Integer.compare(originalIndex, reinsertedIndex));
+      int startPos = Math.min(oldIndex + 1, newIndex);
+      int length = Math.abs(newIndex - oldIndex);
+      int offset = Integer.compare(oldIndex, newIndex);
+      ArrayUtils.INSTANCE.moveByOffset(deliveryLocations, startPos, length, offset);
 
-      deliveryLocations[reinsertedIndex] = origin;
+      deliveryLocations[newIndex] = origin;
 
-      cost += getCostBtwPredAndSuccOf(deliveryLocations, reinsertedIndex);
-      cost += originalIndex < reinsertedIndex ? getCostBtwPredAnd(deliveryLocations, originalIndex) : getCostBtwSuccAnd(deliveryLocations, originalIndex);
+      cost += getCostBtwPredAndSuccOf(deliveryLocations, newIndex);
+      cost += oldIndex < newIndex ? getCostBtwPredAnd(deliveryLocations, oldIndex) : getCostBtwSuccAnd(deliveryLocations, oldIndex);
 
       times--;
     }
 
     solution.setObjectiveFunctionValue(cost);
     return cost;
-  }
-
-  /**
-   * TODO
-   *
-   * @param array
-   * @param startPos
-   * @param length
-   * @param offset
-   */
-  private void moveByOffset(int[] array, int startPos, int length, int offset) {
-    System.arraycopy(array, startPos, array, startPos + offset, length);
   }
 
   @Override
