@@ -28,7 +28,7 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
     while (times > 0) {
       // randomise the order in which the delivery locations are tried
-      int[] perm = PermutationUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, oRandom);
+      int[] perm = PermutationUtils.INSTANCE.createRandomPermutation(numberOfDeliveryLocations, random);
 
       for (int i = 0; i < numberOfDeliveryLocations; i++) {
         // chooses a location randomly and gets the location visited after it

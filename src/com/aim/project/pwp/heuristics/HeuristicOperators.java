@@ -7,27 +7,18 @@ import java.util.Random;
 
 public class HeuristicOperators {
 
-  protected final Random oRandom;
+  protected final Random random;
 
-  protected ObjectiveFunctionInterface oObjectiveFunction;
+  protected ObjectiveFunctionInterface objectiveFunction;
 
-  public HeuristicOperators(Random oRandom) {
-    this.oRandom = oRandom;
+  public HeuristicOperators(Random random) {
+    this.random = random;
   }
 
   public void setObjectiveFunction(ObjectiveFunctionInterface f) {
-    this.oObjectiveFunction = f;
+    this.objectiveFunction = f;
   }
 
-  /**
-   * TODO
-   *
-   * @param locations
-   * @param iIndexA
-   * @param iIndexB
-   * @param cost
-   * @return
-   */
   protected double adjacentSwap(int[] locations, int iIndexA, int iIndexB, double cost) {
     int numberOfDeliveryLocations = locations.length;
 
@@ -52,21 +43,21 @@ public class HeuristicOperators {
 
   protected double getCostBtwPredAnd(int[] locations, int index) {
     if (index == 0) {
-      return oObjectiveFunction.getCostBetweenDepotAnd(locations[index]);
+      return objectiveFunction.getCostBetweenDepotAnd(locations[index]);
     } else {
-      return oObjectiveFunction.getCost(locations[index], locations[index - 1]);
+      return objectiveFunction.getCost(locations[index], locations[index - 1]);
     }
   }
 
   protected double getCostBtwSuccAnd(int[] locations, int index) {
     if (index == locations.length - 1) {
-      return oObjectiveFunction.getCostBetweenHomeAnd(locations[index]);
+      return objectiveFunction.getCostBetweenHomeAnd(locations[index]);
     } else {
-      return oObjectiveFunction.getCost(locations[index], locations[index + 1]);
+      return objectiveFunction.getCost(locations[index], locations[index + 1]);
     }
   }
 
-  protected double getCostBtwPredAndSuccOf(int[] locations, int index) {
+  protected double getCostBtwBothPredAndSuccOf(int[] locations, int index) {
     return getCostBtwPredAnd(locations, index) + getCostBtwSuccAnd(locations, index);
   }
 }

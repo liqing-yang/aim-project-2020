@@ -21,9 +21,9 @@ public abstract class HH_Runner_Visual {
   public void run() {
 
     long seed = 13032020L;
-    long timeLimit = 60_000L;
+    long timeLimit = 1_000L;
     AIM_PWP problem = new AIM_PWP(seed);
-    problem.loadInstance(4);
+    problem.loadInstance(0);
     HyperHeuristic hh = getHyperHeuristic(seed);
     hh.setTimeLimit(timeLimit);
     hh.loadProblemDomain(problem);

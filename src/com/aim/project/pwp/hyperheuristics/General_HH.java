@@ -8,8 +8,6 @@ import com.aim.project.pwp.hyperheuristics.acceptanceMethods.*;
 import com.aim.project.pwp.hyperheuristics.selectionMethods.*;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
-import java.util.Random;
-
 public class General_HH extends HyperHeuristic {
 
   public General_HH(long seed) {
@@ -37,13 +35,15 @@ public class General_HH extends HyperHeuristic {
           new ReinforcementLearning(heuristicPairs, 5, 1, 10, rng),
           new Greedy(heuristicPairs, rng, problem)
         };
-    SelectionInterface selection = selections[2];
+    SelectionInterface selection = selections[1];
 
-    AcceptanceInterface[] acceptances = new AcceptanceInterface[] {new AllMoves(), new OnlyImproving(), new EqualAndImproving()};
-    AcceptanceInterface acceptance = acceptances[1];
+    AcceptanceInterface[] acceptances =
+        new AcceptanceInterface[] {
+          new AllMoves(), new OnlyImproving(), new EqualAndImproving(), new SimulatedAnnealing(rng)
+        };
+    AcceptanceInterface acceptance = acceptances[3];
 
     long iteration = 0;
-    System.out.println("Iteration\tf(s)\tf(s')\tAccept");
 
     while (!hasTimeExpired()) {
       HeuristicPair heuristicPair = selection.selectHeuristics();
@@ -72,16 +72,16 @@ public class General_HH extends HyperHeuristic {
   }
 
   public HeuristicPair[] generateHeuristicPairs(ProblemDomain problem) {
-    int[] heuristicsUseIOM = problem.getHeuristicsThatUseIntensityOfMutation();
-    int[] heuristicsUseDOS = problem.getHeuristicsThatUseDepthOfSearch();
+    int[] mutations = problem.getHeuristicsOfType(ProblemDomain.HeuristicType.MUTATION);
+    int[] localSearches = problem.getHeuristicsOfType(ProblemDomain.HeuristicType.LOCAL_SEARCH);
 
-    int pairsNumber = heuristicsUseIOM.length * heuristicsUseDOS.length;
+    int pairsNumber = mutations.length * localSearches.length;
     HeuristicPair[] heuristicPairs = new HeuristicPair[pairsNumber];
 
     int i = 0;
-    for (int IOMs : heuristicsUseIOM) {
-      for (int DOSs : heuristicsUseDOS) {
-        heuristicPairs[i++] = new HeuristicPair(IOMs, DOSs);
+    for (int mutation : mutations) {
+      for (int localSearch : localSearches) {
+        heuristicPairs[i++] = new HeuristicPair(mutation, localSearch);
       }
     }
     return heuristicPairs;
