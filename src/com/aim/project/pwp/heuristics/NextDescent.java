@@ -25,7 +25,7 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
     double cost = oSolution.getObjectiveFunctionValue();
 
-    int start = oRandom.nextInt(numberOfDeliveryLocations);
+    int start = random.nextInt(numberOfDeliveryLocations);
 
     for (int i = 0; i < numberOfDeliveryLocations && times > 0; i++) {
       int first = (start + i) % numberOfDeliveryLocations;

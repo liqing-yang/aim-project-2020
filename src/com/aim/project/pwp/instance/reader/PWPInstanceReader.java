@@ -15,6 +15,25 @@ import com.aim.project.pwp.interfaces.PWPInstanceReaderInterface;
 
 public class PWPInstanceReader implements PWPInstanceReaderInterface {
 
+  /**
+   * File format:
+   * -----------------------
+   * NAME : <name : string>
+   * COMMENT : <comment : string>
+   * POSTAL_OFFICE
+   * <x coordinate : double> <y coordinate : double>
+   * WORKER_ADDRESS
+   * <x coordinate : double > <y coordinate : double >
+   * POSTAL_ADDRESSES
+   * <x coordinate : double > <y coordinate : double >
+   * ...
+   * <x coordinate : double > <y coordinate : double >
+   * EOF
+   * -----------------------
+   * @param path The path to the instance file.
+   * @param random The random number generator to use.
+   * @return A new PWPInstance Object according to the file
+   */
   @Override
   public PWPInstanceInterface readPWPInstance(Path path, Random random) {
 

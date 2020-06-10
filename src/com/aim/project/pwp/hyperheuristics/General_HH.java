@@ -4,10 +4,9 @@ import AbstractClasses.HyperHeuristic;
 import AbstractClasses.ProblemDomain;
 import com.aim.project.pwp.AIM_PWP;
 import com.aim.project.pwp.SolutionPrinter;
+import com.aim.project.pwp.hyperheuristics.acceptanceMethods.*;
 import com.aim.project.pwp.hyperheuristics.selectionMethods.*;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
-
-import java.util.Random;
 
 public class General_HH extends HyperHeuristic {
 
@@ -29,18 +28,29 @@ public class General_HH extends HyperHeuristic {
 
     HeuristicPair[] heuristicPairs = generateHeuristicPairs(problem);
 
-    SelectionInterface[] selections = initialiseSelectionMethods(heuristicPairs, problem, this.rng);
-    SelectionInterface selection = selections[3];
+    SelectionInterface[] selections =
+        new SelectionInterface[] {
+          new SimpleRandom(heuristicPairs, rng),
+          new RandomPermutationDescent(heuristicPairs, rng),
+          new ReinforcementLearning(heuristicPairs, 5, 1, 10, rng),
+          new Greedy(heuristicPairs, rng, problem)
+        };
+    SelectionInterface selection = selections[1];
+
+    AcceptanceInterface[] acceptances =
+        new AcceptanceInterface[] {
+          new AllMoves(), new OnlyImproving(), new EqualAndImproving(), new SimulatedAnnealing(rng)
+        };
+    AcceptanceInterface acceptance = acceptances[3];
 
     long iteration = 0;
-    System.out.println("Iteration\tf(s)\tf(s')\tAccept");
 
     while (!hasTimeExpired()) {
       HeuristicPair heuristicPair = selection.selectHeuristics();
 
       double candidateCost = HyFlexUtilities.applyHeuristicPair(problem, heuristicPair);
 
-      boolean accept = candidateCost <= currentCost;
+      boolean accept = acceptance.isAccepted(currentCost, candidateCost);
       selection.updateAcceptedLast(accept);
       if (accept) {
         problem.copySolution(candidateIndex, currentIndex);
@@ -62,27 +72,18 @@ public class General_HH extends HyperHeuristic {
   }
 
   public HeuristicPair[] generateHeuristicPairs(ProblemDomain problem) {
-    int[] heuristicsUseIOM = problem.getHeuristicsThatUseIntensityOfMutation();
-    int[] heuristicsUseDOS = problem.getHeuristicsThatUseDepthOfSearch();
+    int[] mutations = problem.getHeuristicsOfType(ProblemDomain.HeuristicType.MUTATION);
+    int[] localSearches = problem.getHeuristicsOfType(ProblemDomain.HeuristicType.LOCAL_SEARCH);
 
-    int pairsNumber = heuristicsUseIOM.length * heuristicsUseDOS.length;
+    int pairsNumber = mutations.length * localSearches.length;
     HeuristicPair[] heuristicPairs = new HeuristicPair[pairsNumber];
 
     int i = 0;
-    for (int IOMs : heuristicsUseIOM) {
-      for (int DOSs : heuristicsUseDOS) {
-        heuristicPairs[i++] = new HeuristicPair(IOMs, DOSs);
+    for (int mutation : mutations) {
+      for (int localSearch : localSearches) {
+        heuristicPairs[i++] = new HeuristicPair(mutation, localSearch);
       }
     }
     return heuristicPairs;
-  }
-
-  private SelectionInterface[] initialiseSelectionMethods(HeuristicPair[] heuristicPairs, ProblemDomain problem, Random random) {
-    return new SelectionInterface[] {
-      new SimpleRandom(heuristicPairs, random),
-      new RandomPermutationDescent(heuristicPairs, random),
-      new ReinforcementLearning(heuristicPairs, 15, 1, 30, random),
-      new Greedy(heuristicPairs, random, problem)
-    };
   }
 }

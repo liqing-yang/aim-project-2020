@@ -21,7 +21,7 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
     double cost = solution.getObjectiveFunctionValue();
 
     while (times > 0) {
-      int first = oRandom.nextInt(numberOfDeliveryLocations);
+      int first = random.nextInt(numberOfDeliveryLocations);
       int second = first + 1 == numberOfDeliveryLocations ? 0 : first + 1;
 
       cost = adjacentSwap(deliveryLocations, first, second, cost);

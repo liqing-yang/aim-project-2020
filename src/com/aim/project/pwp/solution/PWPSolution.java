@@ -9,7 +9,8 @@ public class PWPSolution implements PWPSolutionInterface {
 
   private double dObjectiveFunctionValue;
 
-  public PWPSolution(SolutionRepresentationInterface representation, double objectiveFunctionValue) {
+  public PWPSolution(
+      SolutionRepresentationInterface representation, double objectiveFunctionValue) {
     this.oRepresentation = representation;
     this.dObjectiveFunctionValue = objectiveFunctionValue;
   }
@@ -34,10 +35,7 @@ public class PWPSolution implements PWPSolutionInterface {
     return new PWPSolution(oRepresentation.clone(), dObjectiveFunctionValue);
   }
 
-  /**
-   *
-   * @return The total number of locations in this instance (includes DEPOT and HOME).
-   */
+  /** @return The total number of locations in this instance (includes DEPOT and HOME). */
   @Override
   public int getNumberOfLocations() {
     return oRepresentation.getNumberOfLocations() + 2;

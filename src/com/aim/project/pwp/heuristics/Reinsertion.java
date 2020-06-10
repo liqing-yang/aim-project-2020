@@ -23,13 +23,13 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 
     while (times > 0) {
       // randomly select a delivery location and find a different place for it
-      int oldIndex = oRandom.nextInt(numberOfDeliveryLocations);
-      int newIndex = oRandom.nextInt(numberOfDeliveryLocations);
+      int oldIndex = random.nextInt(numberOfDeliveryLocations);
+      int newIndex = random.nextInt(numberOfDeliveryLocations);
       if (oldIndex == newIndex) {
         newIndex = newIndex + 1 == numberOfDeliveryLocations ? 0 : newIndex + 1;
       }
 
-      cost -= getCostBtwPredAndSuccOf(deliveryLocations, oldIndex);
+      cost -= getCostBtwBothPredAndSuccOf(deliveryLocations, oldIndex);
       cost -= oldIndex < newIndex ? getCostBtwSuccAnd(deliveryLocations, newIndex) : getCostBtwPredAnd(deliveryLocations, newIndex);
 
       int origin = deliveryLocations[oldIndex];
@@ -42,7 +42,7 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 
       deliveryLocations[newIndex] = origin;
 
-      cost += getCostBtwPredAndSuccOf(deliveryLocations, newIndex);
+      cost += getCostBtwBothPredAndSuccOf(deliveryLocations, newIndex);
       cost += oldIndex < newIndex ? getCostBtwPredAnd(deliveryLocations, oldIndex) : getCostBtwSuccAnd(deliveryLocations, oldIndex);
 
       times--;

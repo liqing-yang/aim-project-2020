@@ -45,15 +45,15 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   private final int[] heuristicsUseIOM = new int[] {0, 1, 2, 5, 6};
 
   /**
-   * TODO - set default memory size and create the array of low-level heuristics
+   * The constructor sets default memory size and creates the array of low-level heuristics.
    *
-   * @param seed
+   * @param seed The random number seed.
    */
   public AIM_PWP(long seed) {
     super(seed); // set default memory size, rng, DOS and IOM
     this.seed = seed;
 
-    aoHeuristics =
+    this.aoHeuristics =
         new HeuristicInterface[] {
           new InversionMutation(rng),
           new AdjacentSwap(rng),
@@ -74,10 +74,11 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   }
 
   @Override
-  public double applyHeuristic(int hIndex, int currentIndex, int candidateIndex) {
-    this.copySolution(currentIndex, candidateIndex);
+  public double applyHeuristic(int heuristicIndex, int currentIndex, int candidateIndex) {
+    copySolution(currentIndex, candidateIndex);
 
-    this.aoHeuristics[hIndex].apply(getSolution(candidateIndex), this.depthOfSearch, this.intensityOfMutation);
+    this.aoHeuristics[heuristicIndex].apply(
+        getSolution(candidateIndex), this.depthOfSearch, this.intensityOfMutation);
 
     verifyBestSolution(candidateIndex);
 
@@ -85,20 +86,23 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   }
 
   @Override
-  public double applyHeuristic(int hIndex, int parent1Index, int parent2Index, int candidateIndex) {
-    if (!isCrossover(hIndex)) {
-      return applyHeuristic(hIndex, parent1Index, candidateIndex);
+  public double applyHeuristic(
+      int heuristicIndex, int parentAIndex, int parentBIndex, int candidateIndex) {
+    if (!isCrossover(heuristicIndex)) {
+      return applyHeuristic(heuristicIndex, parentAIndex, candidateIndex);
     }
 
-    this.copySolution(parent1Index, candidateIndex);
+    copySolution(parentAIndex, candidateIndex);
 
-    XOHeuristicInterface XOHeuristic = (XOHeuristicInterface) this.aoHeuristics[hIndex];
+    XOHeuristicInterface XOHeuristic = (XOHeuristicInterface) this.aoHeuristics[heuristicIndex];
     XOHeuristic.apply(
-        getSolution(parent1Index),
-        getSolution(parent2Index),
+        getSolution(parentAIndex),
+        getSolution(parentBIndex),
         getSolution(candidateIndex),
         this.depthOfSearch,
         this.intensityOfMutation);
+
+    verifyBestSolution(candidateIndex);
 
     return getFunctionValue(candidateIndex);
   }
@@ -115,11 +119,13 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
   /** Checks if the two solutions at the index {@code indexA} and {@code indexB} are the same. */
   @Override
   public boolean compareSolutions(int indexA, int indexB) {
-    int[] r1 = this.aoMemoryOfSolutions[indexA].getSolutionRepresentation().getSolutionRepresentation();
-    int[] r2 = this.aoMemoryOfSolutions[indexB].getSolutionRepresentation().getSolutionRepresentation();
+    int[] solutionA =
+        this.aoMemoryOfSolutions[indexA].getSolutionRepresentation().getSolutionRepresentation();
+    int[] solutionB =
+        this.aoMemoryOfSolutions[indexB].getSolutionRepresentation().getSolutionRepresentation();
 
-    for (int i = 0; i < r1.length; i++) {
-      if (r1[i] != r2[i]) {
+    for (int i = 0; i < solutionA.length; i++) {
+      if (solutionA[i] != solutionB[i]) {
         return false;
       }
     }
@@ -185,14 +191,6 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
     this.verifyBestSolution(index);
   }
 
-  /**
-   * TODO
-   *
-   * <p>implement the instance reader that this method uses to correctly read in the PWP instance,
-   * and set up the objective function.
-   *
-   * @param instanceId
-   */
   @Override
   public void loadInstance(int instanceId) {
 
@@ -218,17 +216,22 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
    * memory at the same indices. If the memory size is DECREASED, then the first {@code size}
    * solutions are copied to the new memory.
    *
+   * <p>If a memorySize is specified less than or equal to 1, then the request to change the memory
+   * size would be ignored.
+   *
    * @param size The size of new memory.
    */
   @Override
   public void setMemorySize(int size) {
-    PWPSolutionInterface[] tempMemory = new PWPSolutionInterface[size];
-    if (this.aoMemoryOfSolutions != null) {
-      int srcPos = 0, destPos = 0;
-      int bound = Math.min(size, aoMemoryOfSolutions.length);
-      System.arraycopy(this.aoMemoryOfSolutions, srcPos, tempMemory, destPos, bound);
+    if (size > 1) {
+      PWPSolutionInterface[] tempMemory = new PWPSolutionInterface[size];
+      if (this.aoMemoryOfSolutions != null) {
+        int srcPos = 0, destPos = 0;
+        int bound = Math.min(size, aoMemoryOfSolutions.length);
+        System.arraycopy(this.aoMemoryOfSolutions, srcPos, tempMemory, destPos, bound);
+      }
+      this.aoMemoryOfSolutions = tempMemory;
     }
-    this.aoMemoryOfSolutions = tempMemory;
   }
 
   @Override
@@ -241,14 +244,9 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
     return "slyly2's G52AIM PWP";
   }
 
-  /**
-   * TODO
-   *
-   * @param index The index
-   */
-  private void verifyBestSolution(int index) {
-    if (this.oBestSolution == null || getFunctionValue(index) < getBestSolutionValue()) {
-      this.oBestSolution = getSolution(index);
+  private void verifyBestSolution(int candidateIndex) {
+    if (this.oBestSolution == null || getFunctionValue(candidateIndex) < getBestSolutionValue()) {
+      this.oBestSolution = getSolution(candidateIndex);
     }
   }
 
